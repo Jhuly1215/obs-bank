@@ -77,6 +77,20 @@ services:
     networks:
       - observability_default
 
+  # === Simulated External System ===
+  fake-logger:
+    image: busybox
+    container_name: obs-bank-fake-logger
+    command: >
+      sh -c "while true; do 
+        echo '{\"Timestamp\":\"'$(date -Iseconds)'\",\"Level\":\"Information\",\"MessageTemplate\":\"Log simulado de otro sistema\",\"Properties\":{\"SourceContext\":\"Sistema.Externo\"}}'; 
+        sleep 5; 
+        echo 'Log de texto plano del sistema externo';
+        sleep 5;
+      done"
+    networks:
+      - observability_default
+
   # === App Services ===
   bank-api:
     image: bank-api
