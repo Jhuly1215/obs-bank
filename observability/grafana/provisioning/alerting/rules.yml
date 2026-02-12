@@ -1,0 +1,166 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: "Bank API Alerts"
+    folder: "Bank Monitoring"
+    interval: 1m
+    rules:
+      # --- Regla 1: Tasa de errores HTTP 5xx alta ---
+      - uid: bank-api-high-error-rate
+        title: "Alta tasa de errores 5xx"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                sum(rate(http_server_request_duration_seconds_count{http_response_status_code=~"5.."}[2m]))
+                /
+                sum(rate(http_server_request_duration_seconds_count[2m]))
+              instant: true
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: B
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 0.03
+              refId: C
+        noDataState: OK
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          summary: "⚠️ La tasa de errores 5xx de Bank API supera el 3%"
+          description: >
+            La API está generando más del 3% de errores HTTP 5xx.
+            Esto puede indicar un problema en el core bancario, 
+            timeout en BDN/SIBIL, o error en cónyuge (ArgumentOutOfRange).
+        labels:
+          severity: critical
+          service: bank-transactions-api
+          team: observability
+
+      # --- Regla 2: Latencia alta (p95 > 500ms) ---
+      - uid: bank-api-high-latency
+        title: "Latencia alta (P95 > 500ms)"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket[2m])) by (le))
+              instant: true
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: B
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 0.5
+              refId: C
+        noDataState: OK
+        execErrState: Alerting
+        for: 2m
+        annotations:
+          summary: "🐌 Latencia alta detectada en Bank API (P95 > 500ms)"
+          description: >
+            El percentil 95 de latencia supera los 500ms.
+            Esto puede afectar la experiencia de funcionarios en sucursales.
+        labels:
+          severity: warning
+          service: bank-transactions-api
+          team: observability
+
+      # --- Regla 3: Sin peticiones (API caída) ---
+      - uid: bank-api-no-requests
+        title: "API sin tráfico (posible caída)"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                sum(rate(http_server_request_duration_seconds_count[5m]))
+              instant: true
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: B
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: lt
+                    params:
+                      - 0.001
+              refId: C
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 3m
+        annotations:
+          summary: "🔴 Bank API no está recibiendo tráfico"
+          description: >
+            La API no ha recibido ninguna petición en los últimos 5 minutos.
+            Podría estar caída o con problemas de red.
+        labels:
+          severity: critical
+          service: bank-transactions-api
+          team: observability

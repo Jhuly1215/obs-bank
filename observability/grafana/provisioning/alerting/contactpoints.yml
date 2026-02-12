@@ -1,0 +1,12 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: "Alert Bridge (WhatsApp Simulator)"
+    receivers:
+      - uid: alert-bridge-webhook
+        type: webhook
+        settings:
+          url: "http://alert-bridge:3001/webhook"
+          httpMethod: POST
+        disableResolveMessage: false

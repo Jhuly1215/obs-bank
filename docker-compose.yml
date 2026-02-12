@@ -57,6 +57,23 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./observability/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./observability/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./observability/grafana/provisioning/alerting:/etc/grafana/provisioning/alerting:ro
+    networks:
+      - observability_default
+
+  # === Alert Bridge ===
+  alert-bridge:
+    image: alert-bridge
+    build:
+      context: ./services/alert-bridge
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    volumes:
+      - alert-data:/data/alerts
     networks:
       - observability_default
 
@@ -80,3 +97,6 @@ services:
 networks:
   observability_default:
     driver: bridge
+
+volumes:
+  alert-data:

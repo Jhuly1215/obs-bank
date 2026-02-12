@@ -1,0 +1,231 @@
+{
+    "annotations": {
+        "list": []
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 1,
+    "id": null,
+    "links": [],
+    "panels": [
+        {
+            "title": "Requests por Segundo",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 0
+            },
+            "datasource": {
+                "type": "prometheus",
+                "uid": ""
+            },
+            "targets": [
+                {
+                    "expr": "rate(http_server_request_duration_seconds_count[1m])",
+                    "legendFormat": "{{http_request_method}} {{http_route}} ({{http_response_status_code}})",
+                    "refId": "A"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "fillOpacity": 15,
+                        "lineWidth": 2,
+                        "showPoints": "auto"
+                    },
+                    "unit": "reqps"
+                },
+                "overrides": []
+            }
+        },
+        {
+            "title": "Latencia p50 / p95 / p99",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 0
+            },
+            "datasource": {
+                "type": "prometheus",
+                "uid": ""
+            },
+            "targets": [
+                {
+                    "expr": "histogram_quantile(0.50, rate(http_server_request_duration_seconds_bucket[5m]))",
+                    "legendFormat": "p50",
+                    "refId": "A"
+                },
+                {
+                    "expr": "histogram_quantile(0.95, rate(http_server_request_duration_seconds_bucket[5m]))",
+                    "legendFormat": "p95",
+                    "refId": "B"
+                },
+                {
+                    "expr": "histogram_quantile(0.99, rate(http_server_request_duration_seconds_bucket[5m]))",
+                    "legendFormat": "p99",
+                    "refId": "C"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "fillOpacity": 10,
+                        "lineWidth": 2
+                    },
+                    "unit": "s"
+                },
+                "overrides": []
+            }
+        },
+        {
+            "title": "Total Requests por Status Code",
+            "type": "piechart",
+            "gridPos": {
+                "h": 8,
+                "w": 6,
+                "x": 0,
+                "y": 8
+            },
+            "datasource": {
+                "type": "prometheus",
+                "uid": ""
+            },
+            "targets": [
+                {
+                    "expr": "sum by (http_response_status_code) (http_server_request_duration_seconds_count)",
+                    "legendFormat": "HTTP {{http_response_status_code}}",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "title": "Errores 5xx / minuto",
+            "type": "stat",
+            "gridPos": {
+                "h": 8,
+                "w": 6,
+                "x": 6,
+                "y": 8
+            },
+            "datasource": {
+                "type": "prometheus",
+                "uid": ""
+            },
+            "targets": [
+                {
+                    "expr": "sum(rate(http_server_request_duration_seconds_count{http_response_status_code=~\"5..\"}[1m])) * 60",
+                    "legendFormat": "Errores 5xx/min",
+                    "refId": "A"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "yellow",
+                                "value": 1
+                            },
+                            {
+                                "color": "red",
+                                "value": 5
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
+            }
+        },
+        {
+            "title": ".NET Runtime - GC Collections",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 8
+            },
+            "datasource": {
+                "type": "prometheus",
+                "uid": ""
+            },
+            "targets": [
+                {
+                    "expr": "rate(process_runtime_dotnet_gc_collections_count_total[5m])",
+                    "legendFormat": "Gen {{generation}}",
+                    "refId": "A"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "fillOpacity": 20
+                    }
+                },
+                "overrides": []
+            }
+        },
+        {
+            "title": "Logs en Vivo (Bank API)",
+            "type": "logs",
+            "gridPos": {
+                "h": 10,
+                "w": 24,
+                "x": 0,
+                "y": 16
+            },
+            "datasource": {
+                "type": "loki",
+                "uid": ""
+            },
+            "targets": [
+                {
+                    "expr": "{container=~\".*bank-api.*\"}",
+                    "refId": "A"
+                }
+            ],
+            "options": {
+                "showTime": true,
+                "sortOrder": "Descending",
+                "wrapLogMessage": true,
+                "enableLogDetails": true
+            }
+        }
+    ],
+    "refresh": "5s",
+    "schemaVersion": 39,
+    "tags": [
+        "bank-api",
+        "observability"
+    ],
+    "templating": {
+        "list": []
+    },
+    "time": {
+        "from": "now-15m",
+        "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "browser",
+    "title": "Bank API - Observability",
+    "uid": "bank-api-obs",
+    "version": 1
+}
