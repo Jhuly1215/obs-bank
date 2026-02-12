@@ -261,7 +261,7 @@ DELETE http://localhost:3001/alerts
 
 **Opción 2 — Desde PowerShell:**
 ```powershell
-Invoke-RestMethod -Method DELETE -Uri http://localhost:3001/alerts
+    Invoke-RestMethod -Method DELETE -Uri http://localhost:3001/alerts
 ```
 
 **Opción 3 — Desde terminal con curl:**
