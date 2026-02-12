@@ -1,17 +1,15 @@
-version: "3.7"
-
 services:
   jaeger:
     image: jaegertracing/all-in-one:latest
     ports:
-      - "16686:16686"   # UI de Jaeger
+      - "16686:16686" # UI de Jaeger
     environment:
       - COLLECTOR_OTLP_ENABLED=true
 
   prometheus:
     image: prom/prometheus:v2.54.1
     ports:
-      - "9090:9090"  
+      - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
 
@@ -33,11 +31,11 @@ services:
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.111.0
-    command: ["--config=/etc/otelcol/config.yml"]
+    command: [ "--config=/etc/otelcol/config.yml" ]
     ports:
-      - "4317:4317"     # OTLP gRPC (entrada desde .NET)
+      - "4317:4317" # OTLP gRPC (entrada desde .NET)
       # - "4318:4318"s
-      - "8889:8889"     # Métricas para Prometheus
+      - "18889:8889" # Métricas para Prometheus
     volumes:
       - ./otel-collector-config.yml:/etc/otelcol/config.yml:ro
 

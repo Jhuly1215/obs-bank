@@ -1,0 +1,82 @@
+services:
+  # === Observability Stack ===
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686" # UI de Jaeger
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    networks:
+      - observability_default
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - observability_default
+
+  loki:
+    image: grafana/loki:3.1.1
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/config.yml
+    volumes:
+      - ./observability/loki-config.yml:/etc/loki/config.yml:ro
+    networks:
+      - observability_default
+
+  promtail:
+    image: grafana/promtail:3.1.1
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - ./observability/promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - observability_default
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.111.0
+    command: [ "--config=/etc/otelcol/config.yml" ]
+    ports:
+      - "4317:4317" # OTLP gRPC (entrada desde .NET)
+      # - "4318:4318"s
+      - "18889:8889" # Métricas para Prometheus
+    volumes:
+      - ./observability/otel-collector-config.yml:/etc/otelcol/config.yml:ro
+    networks:
+      - observability_default
+
+  grafana:
+    image: grafana/grafana:11.1.4
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - observability_default
+
+  # === App Services ===
+  bank-api:
+    image: bank-api
+    build:
+      context: ./services/Bank.Transactions.Api/Bank.Transactions.Api
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OpenTelemetry__OtlpEndpoint=http://otel-collector:4317
+    networks:
+      - observability_default
+    depends_on:
+      - otel-collector
+
+networks:
+  observability_default:
+    driver: bridge

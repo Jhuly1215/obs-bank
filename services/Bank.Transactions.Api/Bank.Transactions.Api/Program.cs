@@ -2,9 +2,6 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using OpenTelemetry.Instrumentation.Runtime;
-
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +26,7 @@ builder.Logging.AddOpenTelemetry(o =>
     o.AddOtlpExporter(otlp =>
     {
         otlp.Endpoint = new Uri(otlpEndpoint);
+        otlp.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
     });
 
     o.IncludeScopes = true;
@@ -41,14 +39,12 @@ builder.Services.AddOpenTelemetry()
     .WithTracing(tracing =>
     {
         tracing
-            .AddAspNetCoreInstrumentation(opt =>
-            {
-              
-            })
+            .AddAspNetCoreInstrumentation()
             .AddHttpClientInstrumentation()
             .AddOtlpExporter(otlp =>
             {
                 otlp.Endpoint = new Uri(otlpEndpoint);
+                otlp.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
             });
     })
     .WithMetrics(metrics =>
@@ -60,9 +56,10 @@ builder.Services.AddOpenTelemetry()
             .AddOtlpExporter(otlp =>
             {
                 otlp.Endpoint = new Uri(otlpEndpoint);
+                otlp.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+                otlp.ExportProcessorType = OpenTelemetry.ExportProcessorType.Simple;
             });
     });
-
 
 var app = builder.Build();
 
@@ -71,19 +68,16 @@ app.UseSwaggerUI();
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
-// Endpoint demo de “transferencia”
+// Endpoint demo de â€œtransferenciaâ€
 app.MapPost("/api/transactions/transfer", (ILoggerFactory loggerFactory) =>
 {
     var logger = loggerFactory.CreateLogger("Transfer");
 
-    // transactionId: id de negocio (se usa en logs y traces, NO en métricas como label)
     var transactionId = Guid.NewGuid().ToString("N");
 
-    // Logs estructurados (sin PII)
     logger.LogInformation("Transfer started transaction_id={transaction_id} channel={channel} outcome={outcome}",
         transactionId, "api", "pending");
 
-    // Simula procesamiento
     Thread.Sleep(Random.Shared.Next(50, 250));
 
     var success = Random.Shared.NextDouble() > 0.15;
