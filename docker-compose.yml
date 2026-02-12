@@ -107,6 +107,18 @@ services:
       - observability_default
     depends_on:
       - otel-collector
+ 
+  tempo:
+    image: grafana/tempo:2.10.0
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./observability/tempo.yaml:/etc/tempo.yaml:ro
+      - tempo_data:/var/tempo
+    ports:
+      - "3200:3200"
+    networks:
+      - observability_default
+
 
 networks:
   observability_default:
@@ -114,3 +126,5 @@ networks:
 
 volumes:
   alert-data:
+  grafana_data:
+  tempo_data:

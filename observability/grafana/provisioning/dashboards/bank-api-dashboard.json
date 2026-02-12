@@ -1,231 +1,1309 @@
 {
-    "annotations": {
-        "list": []
-    },
-    "editable": true,
-    "fiscalYearStartMonth": 0,
-    "graphTooltip": 1,
-    "id": null,
-    "links": [],
-    "panels": [
-        {
-            "title": "Requests por Segundo",
-            "type": "timeseries",
-            "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 0,
-                "y": 0
-            },
-            "datasource": {
-                "type": "prometheus",
-                "uid": ""
-            },
-            "targets": [
-                {
-                    "expr": "rate(http_server_request_duration_seconds_count[1m])",
-                    "legendFormat": "{{http_request_method}} {{http_route}} ({{http_response_status_code}})",
-                    "refId": "A"
-                }
-            ],
-            "fieldConfig": {
-                "defaults": {
-                    "color": {
-                        "mode": "palette-classic"
-                    },
-                    "custom": {
-                        "fillOpacity": 15,
-                        "lineWidth": 2,
-                        "showPoints": "auto"
-                    },
-                    "unit": "reqps"
-                },
-                "overrides": []
-            }
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
         },
-        {
-            "title": "Latencia p50 / p95 / p99",
-            "type": "timeseries",
-            "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 12,
-                "y": 0
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "tempo",
+        "uid": "P214B5B846CF3925F"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
             },
-            "datasource": {
-                "type": "prometheus",
-                "uid": ""
-            },
-            "targets": [
-                {
-                    "expr": "histogram_quantile(0.50, rate(http_server_request_duration_seconds_bucket[5m]))",
-                    "legendFormat": "p50",
-                    "refId": "A"
-                },
-                {
-                    "expr": "histogram_quantile(0.95, rate(http_server_request_duration_seconds_bucket[5m]))",
-                    "legendFormat": "p95",
-                    "refId": "B"
-                },
-                {
-                    "expr": "histogram_quantile(0.99, rate(http_server_request_duration_seconds_bucket[5m]))",
-                    "legendFormat": "p99",
-                    "refId": "C"
-                }
-            ],
-            "fieldConfig": {
-                "defaults": {
-                    "color": {
-                        "mode": "palette-classic"
-                    },
-                    "custom": {
-                        "fillOpacity": 10,
-                        "lineWidth": 2
-                    },
-                    "unit": "s"
-                },
-                "overrides": []
-            }
-        },
-        {
-            "title": "Total Requests por Status Code",
-            "type": "piechart",
-            "gridPos": {
-                "h": 8,
-                "w": 6,
-                "x": 0,
-                "y": 8
-            },
-            "datasource": {
-                "type": "prometheus",
-                "uid": ""
-            },
-            "targets": [
-                {
-                    "expr": "sum by (http_response_status_code) (http_server_request_duration_seconds_count)",
-                    "legendFormat": "HTTP {{http_response_status_code}}",
-                    "refId": "A"
-                }
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
             ]
+          }
         },
-        {
-            "title": "Errores 5xx / minuto",
-            "type": "stat",
-            "gridPos": {
-                "h": 8,
-                "w": 6,
-                "x": 6,
-                "y": 8
-            },
-            "datasource": {
-                "type": "prometheus",
-                "uid": ""
-            },
-            "targets": [
-                {
-                    "expr": "sum(rate(http_server_request_duration_seconds_count{http_response_status_code=~\"5..\"}[1m])) * 60",
-                    "legendFormat": "Errores 5xx/min",
-                    "refId": "A"
-                }
-            ],
-            "fieldConfig": {
-                "defaults": {
-                    "color": {
-                        "mode": "thresholds"
-                    },
-                    "thresholds": {
-                        "mode": "absolute",
-                        "steps": [
-                            {
-                                "color": "green",
-                                "value": null
-                            },
-                            {
-                                "color": "yellow",
-                                "value": 1
-                            },
-                            {
-                                "color": "red",
-                                "value": 5
-                            }
-                        ]
-                    }
-                },
-                "overrides": []
-            }
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 15,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
         },
+        "showHeader": true
+      },
+      "pluginVersion": "11.1.4",
+      "targets": [
         {
-            "title": ".NET Runtime - GC Collections",
-            "type": "timeseries",
-            "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 12,
-                "y": 8
-            },
-            "datasource": {
-                "type": "prometheus",
-                "uid": ""
-            },
-            "targets": [
-                {
-                    "expr": "rate(process_runtime_dotnet_gc_collections_count_total[5m])",
-                    "legendFormat": "Gen {{generation}}",
-                    "refId": "A"
-                }
-            ],
-            "fieldConfig": {
-                "defaults": {
-                    "custom": {
-                        "fillOpacity": 20
-                    }
-                },
-                "overrides": []
-            }
-        },
-        {
-            "title": "Logs en Vivo (Bank API)",
-            "type": "logs",
-            "gridPos": {
-                "h": 10,
-                "w": 24,
-                "x": 0,
-                "y": 16
-            },
-            "datasource": {
-                "type": "loki",
-                "uid": ""
-            },
-            "targets": [
-                {
-                    "expr": "{container=~\".*bank-api.*\"}",
-                    "refId": "A"
-                }
-            ],
-            "options": {
-                "showTime": true,
-                "sortOrder": "Descending",
-                "wrapLogMessage": true,
-                "enableLogDetails": true
-            }
+          "datasource": {
+            "type": "tempo",
+            "uid": "P214B5B846CF3925F"
+          },
+          "limit": 20,
+          "query": "{ }",
+          "queryType": "traceql",
+          "refId": "A",
+          "tableType": "traces"
         }
-    ],
-    "refresh": "5s",
-    "schemaVersion": 39,
-    "tags": [
-        "bank-api",
-        "observability"
-    ],
-    "templating": {
-        "list": []
+      ],
+      "title": "Tempo- All",
+      "type": "table"
     },
-    "time": {
-        "from": "now-15m",
-        "to": "now"
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "libraryPanel": {
+        "name": "Latencia p50 / p95 / p99",
+        "uid": "afd1tp6yhlzi8b"
+      },
+      "title": "Latencia p50 / p95 / p99"
     },
-    "timepicker": {},
-    "timezone": "browser",
-    "title": "Bank API - Observability",
-    "uid": "bank-api-obs",
-    "version": 1
+    {
+      "datasource": {
+        "type": "tempo",
+        "uid": "P214B5B846CF3925F"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 14,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.1.4",
+      "targets": [
+        {
+          "datasource": {
+            "type": "tempo",
+            "uid": "P214B5B846CF3925F"
+          },
+          "limit": 20,
+          "query": "{ }",
+          "queryType": "traceql",
+          "refId": "A",
+          "tableType": "traces"
+        },
+        {
+          "datasource": {
+            "type": "tempo",
+            "uid": "P214B5B846CF3925F"
+          },
+          "limit": 20,
+          "query": "{ resource.service.name = \"bank-transactions-api\" }",
+          "queryType": "traceql",
+          "refId": "B",
+          "tableType": "traces"
+        }
+      ],
+      "title": "Tempo- Transactions api",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "rate(process_runtime_dotnet_gc_collections_count_total[5m])\r\nor\r\nrate(dotnet_gc_collections_total[5m])\r\n",
+          "legendFormat": "Gen {{generation}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": ".NET Runtime - GC Collections",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": ""
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 16
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum by (http_response_status_code) (http_server_request_duration_seconds_count)",
+          "legendFormat": "HTTP {{http_response_status_code}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Total Requests por Status Code",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 16
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.1.4",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "(sum(rate(http_server_request_duration_seconds_count{http_response_status_code=~\"5..\"}[1m])) * 60)\r\nor on() vector(0)",
+          "legendFormat": "Errores 5xx/min",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Errores 5xx / minuto",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(http_server_request_duration_seconds_count{http_route=\"/api/transactions/transfer\", http_response_status_code=~\"2..\"}[5m]))\r\n/\r\nsum(rate(http_server_request_duration_seconds_count{http_route=\"/api/transactions/transfer\"}[5m]))",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Tasa de éxito (2xx)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": ""
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "expr": "rate(http_server_request_duration_seconds_count[1m])",
+          "legendFormat": "{{http_request_method}} {{http_route}} ({{http_response_status_code}})",
+          "refId": "A"
+        }
+      ],
+      "title": "Requests por Segundo",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "P8E80F9AEF21F6940"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "id": 12,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.1.4",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "P8E80F9AEF21F6940"
+          },
+          "editorMode": "code",
+          "expr": "{container=~\".*bank.*\"} |= \"Transfer failed\"",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Transferencias fallidas",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "topk(5,\r\n  histogram_quantile(\r\n    0.95,\r\n    sum(rate(http_server_request_duration_seconds_bucket[5m])) by (le, http_route)\r\n  )\r\n)\r\n",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Top endpoints más lentos (P95 por ruta)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "P8E80F9AEF21F6940"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 32
+      },
+      "id": 13,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.1.4",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "P8E80F9AEF21F6940"
+          },
+          "editorMode": "code",
+          "expr": "{container=~\".*bank.*\"} |= \"Transfer failed\" |= \"INTERBANK_TIMEOUT\"",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Transferencias fallidas y timeout",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 40
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(http_server_request_duration_seconds_count{http_route=\"/api/transactions/transfer\"}[1m]))",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "RPS de transferencias",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 48
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(\r\n  0.95,\r\n  sum(rate(http_server_request_duration_seconds_bucket{http_route=\"/api/transactions/transfer\"}[5m])) by (le)\r\n)",
+          "instant": false,
+          "legendFormat": "",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Latencia P95 SOLO de transferencias",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 56
+      },
+      "id": 9,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(http_server_request_duration_seconds_count{http_route=\"/api/transactions/transfer\", http_response_status_code=~\"5..\"}[5m]))\r\n/\r\nsum(rate(http_server_request_duration_seconds_count{http_route=\"/api/transactions/transfer\"}[5m]))",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Tasa de fallo (5xx)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": ""
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 64
+      },
+      "id": 6,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      },
+      "targets": [
+        {
+          "expr": "{container=~\".*bank-api.*\"}",
+          "refId": "A"
+        }
+      ],
+      "title": "Logs en Vivo (Bank API)",
+      "type": "logs"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "tags": [
+    "bank-api",
+    "observability"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "",
+          "value": ""
+        },
+        "hide": 0,
+        "label": "Transaction ID",
+        "name": "tx",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "obs-bank-alert-bridge-1",
+            "obs-bank-bank-api-1",
+            "obs-bank-fake-logger",
+            "obs-bank-grafana-1",
+            "obs-bank-jaeger-1",
+            "obs-bank-loki-1",
+            "obs-bank-otel-collector-1",
+            "obs-bank-prometheus-1",
+            "obs-bank-promtail-1"
+          ],
+          "value": [
+            "obs-bank-alert-bridge-1",
+            "obs-bank-bank-api-1",
+            "obs-bank-fake-logger",
+            "obs-bank-grafana-1",
+            "obs-bank-jaeger-1",
+            "obs-bank-loki-1",
+            "obs-bank-otel-collector-1",
+            "obs-bank-prometheus-1",
+            "obs-bank-promtail-1"
+          ]
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "P8E80F9AEF21F6940"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Container",
+        "multi": true,
+        "name": "container",
+        "options": [],
+        "query": {
+          "label": "container",
+          "refId": "LokiVariableQueryEditor-VariableQuery",
+          "stream": "{container=~\".+\"}",
+          "type": 1
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "P8E80F9AEF21F6940"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Stream",
+        "multi": false,
+        "name": "stream",
+        "options": [],
+        "query": {
+          "label": "stream",
+          "refId": "LokiVariableQueryEditor-VariableQuery",
+          "stream": "{container=~\"$container\"}",
+          "type": 1
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "P8E80F9AEF21F6940"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Level_json",
+        "multi": false,
+        "name": "level_json",
+        "options": [],
+        "query": {
+          "label": "level_json",
+          "refId": "LokiVariableQueryEditor-VariableQuery",
+          "stream": "{container=~\"$container\", level_json=~\".+\"}",
+          "type": 1
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "P8E80F9AEF21F6940"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Level_txt",
+        "multi": false,
+        "name": "level_txt",
+        "options": [],
+        "query": {
+          "label": "level_txt",
+          "refId": "LokiVariableQueryEditor-VariableQuery",
+          "stream": "{container=~\"$container\", level_txt=~\".+\"}",
+          "type": 1
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Bank API - Observability",
+  "uid": "bank-api-obs",
+  "version": 2,
+  "weekStart": ""
 }

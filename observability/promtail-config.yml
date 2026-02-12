@@ -16,29 +16,44 @@ scrape_configs:
         filters:
           - name: status
             values: [running]
+
     relabel_configs:
       - source_labels: ['__meta_docker_container_name']
         regex: '/(.*)'
         target_label: 'container'
+
       - source_labels: ['__meta_docker_container_log_stream']
         target_label: 'stream'
+
+      - source_labels: ['__meta_docker_container_log_path']
+        target_label: '__path__'
+
     pipeline_stages:
+      - docker: {}
+
       - json:
           expressions:
-            timestamp: Timestamp
-            level: Level
-            message: MessageTemplate
+            ts: Timestamp
+            level_json: Level
+            msg_json: MessageTemplate
             properties: Properties
+
       - json:
           source: properties
           expressions:
-            context: SourceContext
+            context_json: SourceContext
             request_path: RequestPath
+
+      - regex:
+          expression: '^(?P<level_txt>\w+):\s+(?P<context_txt>[^\[]+)(?:\[(?P<event_id>\d+)\])?\s+(?P<msg_txt>.*)$'
+
       - labels:
-          level:
-          context:
+          level_json:
+          context_json:
+          level_txt:
+          context_txt:
+
       - timestamp:
-          source: timestamp
+          source: ts
           format: RFC3339
-      - output:
-          source: message
+          action_on_failure: skip
