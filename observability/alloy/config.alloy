@@ -1,0 +1,51 @@
+// Descubre contenedores Docker
+discovery.docker "local" {
+  host             = "unix:///var/run/docker.sock"
+  refresh_interval = "5s"
+}
+
+// Reglas para convertir metadata de Docker a labels de Loki
+discovery.relabel "docker_to_loki" {
+  targets = discovery.docker.local.targets
+
+  // container = nombre sin el "/"
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+
+  // compose_service = nombre del service en docker compose (si existe)
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    target_label  = "compose_service"
+  }
+}
+
+// Lee logs desde Docker y los manda al pipeline
+loki.source.docker "docker" {
+  host             = "unix:///var/run/docker.sock"
+  targets          = discovery.docker.local.targets
+  relabel_rules    = discovery.relabel.docker_to_loki.rules
+  refresh_interval = "5s"
+  forward_to       = [loki.process.to_loki.receiver]
+}
+
+// (Opcional) agrega labels fijos útiles para queries/variables
+loki.process "to_loki" {
+  stage.static_labels {
+    values = {
+      job   = "docker"
+      stack = "obs-bank"
+    }
+  }
+
+  forward_to = [loki.write.local.receiver]
+}
+
+// Envía a Loki
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
